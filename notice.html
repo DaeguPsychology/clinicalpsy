@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>대구대학교 임상심리연구소 | 공지 상세</title>
+<meta name="description" content="대구대학교 임상심리연구소 공지사항 상세 보기.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<section class="subhero">
+  <div class="arc"></div>
+  <div class="wrap">
+    <h1>공지 · 소식</h1>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <article class="notice-view" id="notice-view">
+      <p style="text-align:center;color:#999;padding:40px 0">불러오는 중…</p>
+    </article>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<!-- 공지 상세 렌더링 (내용은 notices.js 에서 관리) -->
+<script src="notices.js"></script>
+<script>
+(function(){
+  var view = document.getElementById('notice-view');
+  var esc = function(s){ return String(s).replace(/[&<>"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+
+  function param(name){
+    var m = new RegExp('[?&]'+name+'=([^&]*)').exec(location.search);
+    return m ? decodeURIComponent(m[1]) : null;
+  }
+  var id = parseInt(param('id'), 10);
+
+  if(typeof NOTICES === 'undefined' || isNaN(id) || !NOTICES[id]){
+    view.innerHTML = '<p style="text-align:center;color:#999;padding:40px 0">'
+      + '공지를 찾을 수 없습니다.</p>'
+      + '<div class="nv-nav"><span></span>'
+      + '<a href="activities.html">목록으로 →</a></div>';
+    return;
+  }
+
+  var n = NOTICES[id];
+  document.title = '대구대학교 임상심리연구소 | ' + (n.title || '공지 상세');
+
+  // 본문: 빈 줄로 문단 분리, 문단 내 줄바꿈은 <br>
+  var bodyHtml = '';
+  if(n.body){
+    bodyHtml = n.body.trim().split(/\n\s*\n/).map(function(p){
+      return '<p>' + esc(p.trim()).replace(/\n/g, '<br>') + '</p>';
+    }).join('');
+  }else{
+    bodyHtml = '<p style="color:#999">등록된 상세 내용이 없습니다.</p>';
+  }
+
+  var fileHtml = '';
+  if(n.file){
+    fileHtml = '<div class="nv-file">📎 첨부파일: '
+      + '<a href="' + esc(n.file) + '" download>' + esc(n.file) + '</a></div>';
+  }
+
+  // 날짜 최신순에서의 이전/다음 글 찾기 (목록과 동일한 정렬)
+  var order = NOTICES.map(function(x, i){ return { id:i, date:x.date, no:i+1 }; });
+  order.sort(function(a, b){
+    if(a.date !== b.date) return a.date < b.date ? 1 : -1;
+    return b.no - a.no;
+  });
+  var pos = order.findIndex(function(x){ return x.id === id; });
+  var newer = pos > 0 ? order[pos-1] : null;             // 더 최신 글
+  var older = pos < order.length-1 ? order[pos+1] : null; // 더 이전 글
+
+  var newerLink = newer
+    ? '<a href="notice.html?id=' + newer.id + '">← 이전 글(최신)</a>'
+    : '<span class="disabled">← 이전 글</span>';
+  var olderLink = older
+    ? '<a href="notice.html?id=' + older.id + '">다음 글(과거) →</a>'
+    : '<span class="disabled">다음 글 →</span>';
+
+  view.innerHTML =
+    '<div class="nv-head">'
+    + (n.tag ? '<span class="nv-tag">' + esc(n.tag) + '</span><br>' : '')
+    + '<h1>' + esc(n.title || '') + '</h1>'
+    + '<p class="nv-date">' + esc(n.date || '') + '</p>'
+    + '</div>'
+    + '<div class="nv-body">' + bodyHtml + '</div>'
+    + fileHtml
+    + '<div class="nv-nav">' + newerLink
+    + ' <a href="activities.html">목록</a> '
+    + olderLink + '</div>';
+})();
+</script>
+
+<script src="layout.js"></script>
+</body>
+</html>

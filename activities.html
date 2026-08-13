@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>대구대학교 임상심리연구소 | 연구소 활동</title>
+<meta name="description" content="대구대학교 임상심리연구소의 연구 프로젝트, 학술활동, 소식.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="site-header"></div>
+
+<section class="subhero">
+  <div class="arc"></div>
+  <div class="wrap">
+    <h1>연구소 활동</h1>
+  </div>
+</section>
+
+<!-- 주요 활동 -->
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head"><h2>주요 <span class="g">활동</span></h2></div>
+    <table class="notice-table">
+      <thead>
+        <tr><th style="width:210px;white-space:nowrap">연도</th><th>활동명</th><th style="width:130px">비고</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="white-space:nowrap">2026.00</td>
+          <td>(주요 활동 내용을 적어주세요)</td>
+          <td>&nbsp;</td>
+        </tr>
+        <!-- 활동을 추가하려면 위 <tr> ... </tr> 한 줄을 복사해 아래에 붙여넣으세요. -->
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 공지·소식 게시판형 -->
+<section class="block alt">
+  <div class="wrap">
+    <div class="sec-head"><h2>공지 · <span class="g">소식</span></h2></div>
+    <table class="notice-table">
+      <thead>
+        <tr><th class="num">번호</th><th>제목</th><th class="date">등록일</th></tr>
+      </thead>
+      <!-- 아래 목록은 notices.js 파일 내용으로 자동으로 채워집니다. 여기는 수정하지 마세요. -->
+      <tbody id="notice-body"></tbody>
+    </table>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<!-- 공지사항 자동 렌더링 (내용은 notices.js 에서 관리) -->
+<script src="notices.js"></script>
+<script>
+(function(){
+  var body = document.getElementById('notice-body');
+  if(!body || typeof NOTICES === 'undefined') return;
+  var esc = function(s){ return String(s).replace(/[&<>"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+  // 원래 순서(입력 순)를 번호로 고정하고, 화면은 날짜 최신순으로 정렬
+  var items = NOTICES.map(function(n, i){ return { n:n, id:i, no:i+1 }; });
+  items.sort(function(a, b){
+    if(a.n.date !== b.n.date) return a.n.date < b.n.date ? 1 : -1;
+    return b.no - a.no;
+  });
+  body.innerHTML = items.map(function(it){
+    var n = it.n;
+    var tag = n.tag ? '<span class="t-tag">'+esc(n.tag)+'</span>' : '';
+    var title = '<a href="notice.html?id='+it.id+'">'+esc(n.title || '')+'</a>';
+    return '<tr><td class="num">'+it.no+'</td><td>'+tag+title+
+           '</td><td class="date">'+esc(n.date||'')+'</td></tr>';
+  }).join('');
+})();
+</script>
+
+<script src="layout.js"></script>
+</body>
+</html>
